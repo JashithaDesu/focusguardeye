@@ -1,0 +1,17 @@
+# Virtual environment — never commit, machine-specific
+focusguard-env/
+*.venv/
+
+# Compiled Python files
+__pycache__/
+*.pyc
+
+# Local database (optional — see note below)
+*.db
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# VS Code settings (optional — some people do want to share these)
+.vscode/

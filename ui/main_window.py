@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import QTimer, Qt
 from PyQt6.QtGui import QImage, QPixmap
 import cv2
-from notify import send_break_alert
+from ui.notify import send_break_alert
 
 
 class MainWindow(QMainWindow):

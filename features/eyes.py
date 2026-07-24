@@ -39,10 +39,18 @@ def gaze_ratio_x(landmarks):
     right_iris = landmarks[RIGHT_IRIS_CENTER_IDX]
     right_corner_l = landmarks[RIGHT_EYE_IDX[0]]
     right_corner_r = landmarks[RIGHT_EYE_IDX[3]]
-    eye_width = right_corner_r.x - right_corner_l.x
-    if eye_width == 0:
+
+     # Don't assume which corner has the smaller x — just take min/max directly
+    left_x = min(right_corner_l.x, right_corner_r.x)
+    right_x = max(right_corner_l.x, right_corner_r.x)
+    eye_width = right_x - left_x 
+
+    if eye_width < 1e-6:  # guards against near-zero, not just exactly zero
         return 0.5
-    return (right_iris.x - right_corner_l.x) / eye_width
+
+    ratio = (right_iris.x - left_x) / eye_width
+    return max(0.0, min(1.0, ratio))  # clamp so it can never leave the valid 0-1 range
+
 
 
 def is_looking_away(gaze_x, gaze_edge_threshold=0.3):

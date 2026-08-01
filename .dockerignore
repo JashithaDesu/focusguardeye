@@ -1,0 +1,9 @@
+focusguard-env/
+__pycache__/
+*.pyc
+.git/
+*.db
+ui/
+perception.py
+main.py
+test_*.py

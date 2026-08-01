@@ -73,7 +73,7 @@ while cap.isOpened():
         )
     result = break_engine.check(posture_bad_sustained, eye_fatigue)
     if result:
-        last_alert = f"BREAK TRIGGERED — source: {result['trigger_source']}"
+        last_alert = f"BREAK TRIGGERED — sopython urce: {result['trigger_source']}"
         print(last_alert)
 
     cv2.putText(frame, last_alert, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)

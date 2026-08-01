@@ -5,7 +5,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from flask import Flask, jsonify, send_file, request
-from app import generate_report
+from reports.weekly import generate_report
 
 app = Flask(__name__)
 

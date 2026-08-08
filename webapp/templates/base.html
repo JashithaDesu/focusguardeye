@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>FocusGuard</title>
+    <style>
+        body { background: #dbeeff; color: #000; font-family: Segoe UI, Arial, sans-serif; margin: 0; }
+        nav { background: #bcdcff; padding: 12px 24px; display: flex; align-items: center; gap: 16px; }
+        nav a, nav span { text-decoration: none; color: #000; }
+        nav .brand { font-weight: bold; color: #0b5394; font-size: 18px; margin-right: auto; }
+        .btn { background: #0b5394; color: #fff; border: none; border-radius: 6px; padding: 8px 16px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn:hover { background: #094879; }
+        .btn-secondary { background: #fff; color: #000; border: 1px solid #a0c4e4; }
+        .btn-danger { background: #d93025; color: #fff; }
+        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; text-align: center; }
+        input { background: #fff; border: 1px solid #a0c4e4; border-radius: 6px; padding: 10px; width: 100%; max-width: 300px; margin: 6px 0; font-size: 14px; }
+        h1 { color: #0b5394; }
+        .card { background: #fff; border-radius: 10px; padding: 20px; margin-top: 20px; }
+        .error { color: #c0392b; font-weight: bold; }
+    </style>
+</head>
+<body>
+    {% if session.get('email') %}
+    <nav>
+        <span class="brand">FocusGuard</span>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/profile">Profile</a>
+        <a href="/reports">Reports</a>
+        <span style="margin-left:auto"></span>
+        <a href="/logout" class="btn btn-danger">Logout</a>
+    </nav>
+    {% endif %}
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

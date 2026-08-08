@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>FocusGuard</h1>
+<p>Sign in to track your posture and eye health</p>
+<div class="card" style="display:inline-block;">
+    <form method="POST" action="/login">
+        <input type="email" name="email" placeholder="Email" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        {% if error %}<p class="error">{{ error }}</p>{% endif %}
+        <button class="btn" type="submit">Log In</button>
+    </form>
+    <p style="margin-top:16px;">Don't have an account? <a href="/signup">Sign up</a></p>
+</div>
+{% endblock %}

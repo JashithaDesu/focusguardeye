@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Weekly Report</h1>
+<div class="card">
+    <p>Wellness Score: <strong>{{ report.wellness_score if report.wellness_score is not none else "N/A — no data yet" }}</strong></p>
+    <p>Metrics logged: {{ report.metrics_count }} &nbsp; | &nbsp; Breaks triggered: {{ report.breaks_count }}</p>
+    <p>Break sources: {{ report.trigger_sources }}</p>
+    {% if report.chart_path %}
+    <img src="/report-chart" style="max-width:100%; border-radius:8px; margin-top:16px;">
+    {% endif %}
+</div>
+{% endblock %}

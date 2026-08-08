@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Live Tracking</h1>
+<div style="position:relative; width:640px; height:480px; margin:0 auto;">
+    <video id="videoFeed" autoplay playsinline muted style="position:absolute; top:0; left:0; width:640px; height:480px; border-radius:8px;"></video>
+    <canvas id="overlay" width="640" height="480" style="position:absolute; top:0; left:0;"></canvas>
+</div>
+
+<div class="card">
+    <p id="status">Status: Idle</p>
+    <p id="postureText">Posture: —</p>
+    <p id="eyeText">Eye strain: —</p>
+    <p id="alertText" class="error"></p>
+    <button class="btn" id="startBtn">Start Tracking</button>
+    <button class="btn btn-secondary" id="stopBtn">Stop</button>
+</div>
+
+<div id="breakPopup" style="display:none; position:fixed; bottom:40px; right:40px; background:#2d3748; color:#fff; border-radius:16px; padding:24px 30px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+    <div id="popupEmoji" style="font-size:64px;"></div>
+    <div id="popupHeadline" style="font-size:18px; font-weight:bold; color:#4fd1c5; margin-top:8px;"></div>
+    <div id="popupSubtext" style="font-size:13px; margin-top:6px;"></div>
+    <div id="popupCountdown" style="font-size:28px; font-weight:bold; color:#fc8181; margin-top:10px;"></div>
+</div>
+
+<script type="module" src="/static/js/tracking.js"></script>
+{% endblock %}

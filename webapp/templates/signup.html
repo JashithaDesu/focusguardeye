@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Create an Account</h1>
+<div class="card" style="display:inline-block;">
+    <form method="POST" action="/signup">
+        <input type="email" name="email" placeholder="Email" required><br>
+        <input type="password" name="password" placeholder="Password (min 6 chars)" required><br>
+        {% if error %}<p class="error">{{ error }}</p>{% endif %}
+        {% if message %}<p>{{ message }}</p>{% endif %}
+        <button class="btn" type="submit">Create Account</button>
+    </form>
+    <p style="margin-top:16px;">Already have an account? <a href="/login">Log in</a></p>
+</div>
+{% endblock %}

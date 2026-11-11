@@ -58,26 +58,34 @@ def is_looking_away(gaze_x, gaze_edge_threshold=0.3):
 
 
 class BlinkCounter:
-    def __init__(self, ear_threshold=0.21, consec_frames=2):
+    def __init__(self, ear_threshold=0.21, consec_frames=2, max_window_seconds=60):
         self.ear_threshold = ear_threshold
         self.consec_frames = consec_frames
+        self.max_window_seconds = max_window_seconds
         self.frame_counter = 0
-        self.blink_timestamps = []
+        self.blink_timestamps = deque()
+        self.last_timestamp = None  # time of the most recent frame, blink or not
 
     def update(self, ear_value, timestamp):
+        self.last_timestamp = timestamp
         if ear_value < self.ear_threshold:
             self.frame_counter += 1
         else:
             if self.frame_counter >= self.consec_frames:
                 self.blink_timestamps.append(timestamp)
             self.frame_counter = 0
+        # Drop blinks that can no longer fall inside any window, so memory stays bounded
+        cutoff = timestamp - self.max_window_seconds
+        while self.blink_timestamps and self.blink_timestamps[0] < cutoff:
+            self.blink_timestamps.popleft()
 
     def blinks_per_minute(self, window_seconds=60):
-        if not self.blink_timestamps:
+        # The window ends at the latest FRAME, not the latest blink. Otherwise the rate
+        # freezes when the user stops blinking, and low-blink fatigue is never detected.
+        if self.last_timestamp is None:
             return 0
-        cutoff = self.blink_timestamps[-1] - window_seconds
-        recent = [t for t in self.blink_timestamps if t >= cutoff]
-        return len(recent)
+        cutoff = self.last_timestamp - window_seconds
+        return sum(1 for t in self.blink_timestamps if t >= cutoff)
 
 
 class PerclosTracker:

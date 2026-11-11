@@ -113,9 +113,13 @@ class DashboardPage(QWidget):
         self.timer.stop()
         if self.cap:
             self.cap.release()
+            self.cap = None
         if self.store and self.session_id:
             self.store.end_session(self.session_id, time.time())
             self.store.close()
+        # Clear both so a second call (e.g. Stop, then Logout) doesn't write to a closed DB
+        self.store = None
+        self.session_id = None
         self.mode = "idle"
         self.status_label.setText("Status: Stopped")
         self.video_label.setText("No feed — click Start Tracking")

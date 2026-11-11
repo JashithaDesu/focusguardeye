@@ -34,23 +34,31 @@ export function gazeRatioX(landmarks) {
 }
 
 export class BlinkCounter {
-    constructor(earThreshold = 0.21, consecFrames = 2) {
+    constructor(earThreshold = 0.21, consecFrames = 2, maxWindowSeconds = 60) {
         this.earThreshold = earThreshold;
         this.consecFrames = consecFrames;
+        this.maxWindowSeconds = maxWindowSeconds;
         this.frameCounter = 0;
         this.blinkTimestamps = [];
+        this.lastTimestamp = null; // time of the most recent frame, blink or not
     }
     update(earValue, timestamp) {
+        this.lastTimestamp = timestamp;
         if (earValue < this.earThreshold) {
             this.frameCounter++;
         } else {
             if (this.frameCounter >= this.consecFrames) this.blinkTimestamps.push(timestamp);
             this.frameCounter = 0;
         }
+        // Drop blinks that can no longer fall inside any window, so memory stays bounded
+        const cutoff = timestamp - this.maxWindowSeconds;
+        while (this.blinkTimestamps.length && this.blinkTimestamps[0] < cutoff) this.blinkTimestamps.shift();
     }
     blinksPerMinute(windowSeconds = 60) {
-        if (this.blinkTimestamps.length === 0) return 0;
-        const cutoff = this.blinkTimestamps[this.blinkTimestamps.length - 1] - windowSeconds;
+        // The window ends at the latest FRAME, not the latest blink. Otherwise the rate
+        // freezes when the user stops blinking, and low-blink fatigue is never detected.
+        if (this.lastTimestamp === null) return 0;
+        const cutoff = this.lastTimestamp - windowSeconds;
         return this.blinkTimestamps.filter(t => t >= cutoff).length;
     }
 }

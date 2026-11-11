@@ -1,3 +1,4 @@
+from storage.auth import UserStore
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QStackedWidget, QPushButton, QLabel
 
 from ui.login_page import LoginPage
@@ -60,11 +61,18 @@ class AppShell(QMainWindow):
         return bar
 
     def handle_login(self, email):
+        store = UserStore("focusguard.db")
+        user_id = store.get_user_id(email)
+        store.close()
+        self.dashboard_page.user_id = user_id
+        self.reports_page.user_id = user_id
         self.user_label.setText(f"Logged in as {email}")
         self.nav_bar.setVisible(True)
         self.stack.setCurrentIndex(1)  # go straight to Dashboard after login
 
     def handle_logout(self):
         self.dashboard_page.stop_tracking()
+        self.dashboard_page.user_id = None
+        self.reports_page.user_id = None
         self.nav_bar.setVisible(False)
         self.stack.setCurrentIndex(0)

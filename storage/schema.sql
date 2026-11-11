@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS sessions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
     start_time REAL NOT NULL,
     end_time REAL
 );

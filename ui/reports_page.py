@@ -7,6 +7,7 @@ from reports.weekly import generate_report
 class ReportsPage(QWidget):
     def __init__(self):
         super().__init__()
+        self.user_id = None  # set by AppShell after login
 
         title = QLabel("Weekly Report")
         title.setObjectName("TitleLabel")
@@ -29,7 +30,7 @@ class ReportsPage(QWidget):
         self.setLayout(layout)
 
     def refresh_report(self):
-        result = generate_report(db_path="focusguard.db", days=7)
+        result = generate_report(db_path="focusguard.db", days=7, user_id=self.user_id)
 
         score = result["wellness_score"]
         sources = result["trigger_sources"]

@@ -58,5 +58,11 @@ class UserStore:
             return True, "Login successful"
         return False, "Incorrect password"
 
+    def get_user_id(self, email):
+        row = self.conn.execute(
+            "SELECT id FROM users WHERE email = ?", (email.strip().lower(),)
+        ).fetchone()
+        return row[0] if row else None
+
     def close(self):
         self.conn.close()

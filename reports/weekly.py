@@ -6,18 +6,34 @@ import matplotlib.pyplot as plt
 import os
 from datetime import datetime, timedelta
 
+from storage.db import MetricsStore
 
-def load_data(db_path="focusguard.db", days=7):
-    """Pulls metrics and breaks from the last N days into pandas DataFrames."""
+
+def load_data(db_path="focusguard.db", days=7, user_id=None):
+    """Pulls metrics and breaks from the last N days into pandas DataFrames.
+    With a user_id, only that user's sessions are included."""
+    MetricsStore(db_path).close()  # creates/upgrades the tables, so a brand-new database doesn't crash
     conn = sqlite3.connect(db_path)
     cutoff = (datetime.now() - timedelta(days=days)).timestamp()
 
-    metrics = pd.read_sql_query(
-        "SELECT * FROM metrics WHERE timestamp >= ?", conn, params=(cutoff,)
-    )
-    breaks = pd.read_sql_query(
-        "SELECT * FROM breaks WHERE trigger_time >= ?", conn, params=(cutoff,)
-    )
+    if user_id is None:
+        metrics = pd.read_sql_query(
+            "SELECT * FROM metrics WHERE timestamp >= ?", conn, params=(cutoff,)
+        )
+        breaks = pd.read_sql_query(
+            "SELECT * FROM breaks WHERE trigger_time >= ?", conn, params=(cutoff,)
+        )
+    else:
+        metrics = pd.read_sql_query(
+            """SELECT m.* FROM metrics m JOIN sessions s ON m.session_id = s.id
+               WHERE m.timestamp >= ? AND s.user_id = ?""",
+            conn, params=(cutoff, user_id),
+        )
+        breaks = pd.read_sql_query(
+            """SELECT b.* FROM breaks b JOIN sessions s ON b.session_id = s.id
+               WHERE b.trigger_time >= ? AND s.user_id = ?""",
+            conn, params=(cutoff, user_id),
+        )
     conn.close()
 
     if not metrics.empty:
@@ -56,6 +72,8 @@ def summarize_trigger_sources(breaks):
 def render_weekly_charts(metrics, out_path="reports/output/weekly_trends.png"):
     if metrics.empty:
         print("No metrics data available to chart yet.")
+        if os.path.exists(out_path):
+            os.remove(out_path)  # don't keep showing an old chart when there's no recent data
         return None
     os.makedirs(os.path.dirname(out_path), exist_ok=True)  # NEW — ensures the folder exists before saving
     daily = metrics.groupby("date").agg(
@@ -83,11 +101,16 @@ def render_weekly_charts(metrics, out_path="reports/output/weekly_trends.png"):
     return out_path
 
 
-def generate_report(db_path="focusguard.db", days=7):
-    metrics, breaks = load_data(db_path, days)
+def chart_path_for(user_id=None):
+    name = "weekly_trends.png" if user_id is None else f"weekly_trends_user{int(user_id)}.png"
+    return os.path.join("reports", "output", name)
+
+
+def generate_report(db_path="focusguard.db", days=7, user_id=None, out_path=None):
+    metrics, breaks = load_data(db_path, days, user_id)
     score = compute_wellness_score(metrics, breaks)
     sources = summarize_trigger_sources(breaks)
-    chart_path = render_weekly_charts(metrics)
+    chart_path = render_weekly_charts(metrics, out_path or chart_path_for(user_id))
 
     print("\n=== FocusGuard Weekly Report ===")
     print(f"Period: last {days} day(s)")

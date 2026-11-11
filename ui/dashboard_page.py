@@ -78,6 +78,7 @@ class DashboardPage(QWidget):
         self.store = None
         self.session_id = None
         self.session_start = None
+        self.user_id = None  # set by AppShell after login
 
         self.mode = "idle"
         self.calibration_samples = []
@@ -98,7 +99,7 @@ class DashboardPage(QWidget):
 
         self.store = MetricsStore("focusguard.db")
         self.session_start = time.time()
-        self.session_id = self.store.start_session(self.session_start)
+        self.session_id = self.store.start_session(self.session_start, user_id=self.user_id)
         self.last_log_time = 0
 
         self.mode = "calibrating"
